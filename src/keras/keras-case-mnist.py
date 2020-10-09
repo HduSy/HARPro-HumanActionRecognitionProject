@@ -4,7 +4,9 @@ from keras.layers import Dense, Activation
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.optimizers import Adam
+from src.keras.selflayers.AttentionLayer import AttentionLayer
 
+add_attention = True
 learning_rate = 0.001
 # training_iters = 20
 training_iters = 5
@@ -29,8 +31,6 @@ x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
 
-print(y_train.shape)
-input()
 y_train = keras.utils.to_categorical(y_train, n_classes)
 y_test = keras.utils.to_categorical(y_test, n_classes)
 print(y_train.shape)  # (60000,10)
@@ -40,8 +40,17 @@ print(y_train[0])  # [0. 0. 0. 0. 0. 1. 0. 0. 0. 0.] one-hot编码
 
 model = Sequential()
 model.add(LSTM(n_hidden,
-               batch_input_shape=(None, n_step, n_input),
+               batch_input_shape=(None, n_step, n_input), return_sequences=add_attention,
                unroll=True))
+print(model.output_shape)  # (None, 128)
+# with attention
+# LSTM test score: 0.07658717817775905
+# LSTM test accuracy: 0.9757999777793884
+# without attention
+# LSTM test score: 0.06879345740489662
+# LSTM test accuracy: 0.9782000184059143
+if add_attention:
+    model.add(AttentionLayer())
 
 model.add(Dense(n_classes))
 model.add(Activation('softmax'))

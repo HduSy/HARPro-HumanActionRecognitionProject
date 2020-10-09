@@ -3,8 +3,8 @@ import json
 import numpy as np
 from time import *
 
-actions = ['walking', 'boxing', 'handclapping', 'handwaving', 'jogging', 'running']
-action_type = 'walking'
+actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
+action_type = 'boxing'
 dataSetDir = 'F:\\XLDownload\\dataSet\\KTH\\' + action_type + '\\' + action_type + '-video'
 boxing_result_data = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type + '\\' + action_type + '-result-data.txt'
 fileDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type
@@ -157,7 +157,7 @@ def getRefinedPersonKeyPointsInfo(keyPointsInfo):
 def readJSON(filePath):
     personsKeyPointInfo = getRefinedPersonKeyPointsInfo(getKeyPointInfo2(filePath))
     # print(personsKeyPointInfo)
-    # 存在识别出一个以上情况
+    # 存在识别出一个以上情况,getRefinedPersonKeyPointsInfo函数中已做过选择
     if len(personsKeyPointInfo) > 0:
         personsKeyPointInfo[0].append({'action': action_type})  # 增加了对应动作类别,增不增加无所谓可能多余
         return personsKeyPointInfo[0]  # 单人
@@ -169,6 +169,7 @@ def readJSON(filePath):
 # 遍历action_type-video文件夹下所有personx_actionType_dx_uncomp文件夹中所有.json文件
 def readKeyPointJSONFile():
     # global all_frames_effect_keyPointInfo
+    # 得到当前action所有result-json文件夹路径
     result_json_dirs = traverseJSONDirs(dataSetDir)
     jsonFiles = None
     for i in range(len(result_json_dirs)):

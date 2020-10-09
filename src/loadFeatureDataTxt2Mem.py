@@ -1,5 +1,5 @@
 import numpy as np
-
+from src.utils import fusion
 txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\all'
 x_train = []
 x_test = []
@@ -17,11 +17,6 @@ actionLabel = []
 
 def transformTxtLine2FloatList(line):
     return list(map(float, line.split(' ')[:-1]))
-
-
-# TODO:特征融合方法
-def fusion(f1, f2, w1, w2):
-    return np.array(f1) * w1 + np.array(f2) * w2
 
 
 def loadDataFromTxt(sFilePath, tFilePath):

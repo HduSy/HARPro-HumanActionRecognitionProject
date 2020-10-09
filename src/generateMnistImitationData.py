@@ -10,15 +10,29 @@ dataSet = []
 SFeatures = []
 TFeatures = []
 space = 1  # 稀疏间隔
-frameNum = 25
+frameNum = 25  # n_input time_step步长
+regularization = False  # 正则化与否
+# TODO:使用正则化前后对模型准确率的影响
+# without regularization
+# LSTM test score: 0.19241959800006478
+# LSTM test accuracy: 0.9159235954284668
+# with regularization
+# LSTM test score: 0.24375999118112454
+# LSTM test accuracy: 0.9273885488510132
+m = 0.9  # 训练集测试集划分比例
+trainsize = None  # 训练集大小
 xn = []
 yn = []
 
 
 def readDataFromTxt(filePath):
-    global txtDir, actions, dataSet, xn, yn
+    global txtDir, actions, dataSet, xn, yn, trainsize
     tmp = []
     fragment = []
+    if regularization:
+        print('使用正则化')
+    else:
+        print('未使用正则化')
     # 遍历所有动作数据集
     for index in range(6):
         print('处理%s动作' % actions[index])
@@ -39,7 +53,8 @@ def readDataFromTxt(filePath):
                 pre = x
             else:
                 # 同步取同一帧的空间分布特征和时间序列特征
-                sFeature = generateSpatialFeature(x)
+                sFeature = generateSpatialFeature(x, norminalize=regularization)
+                # TODO:时间序列特征正则化后准确率下降
                 tFeature = generateTempralFeature(pre, x)
                 # TODO:fusion存的是np.ndarray
                 fragment.append(fusion(sFeature, tFeature, 1, 2))
@@ -61,7 +76,8 @@ def readDataFromTxt(filePath):
         yn.append(y)
     xn = np.array(xn)
     yn = np.array(yn)
-    return ((xn[:7000], yn[:7000]), (xn[7000:], yn[7000:]))
+    trainsize = int(m * len(dataSet))
+    return ((xn[:trainsize], yn[:trainsize]), (xn[trainsize:], yn[trainsize:]))
     # return dataSet
 
 
@@ -69,7 +85,7 @@ if __name__ == '__main__':
     begin = time()
     ((x_train, y_train), (x_test, y_test)) = readDataFromTxt(txtDir)
     end = time()
-    print('程序处理时长%fs' % (end - begin))
+    print('程序处理时长约%.1fmin' % ((end - begin)/60))
     # print(x_train, y_train)
     # print(type(x_train), type(y_train))
     # net
