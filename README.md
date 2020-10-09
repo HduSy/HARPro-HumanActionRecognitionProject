@@ -17,7 +17,7 @@
 - [Dropout](https://zhuanlan.zhihu.com/p/38200980)
 - [注意力机制](https://blog.csdn.net/uhauha2929/article/details/80733255)
 - [Understanding-LSTMs](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
-- [sktlearn-MinMaxScaler-归一化方法公式:](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html)![归一化完整公式](https://private.codecogs.com/gif.latex?X_scaled%20%3D%20%5Cfrac%7B%20%28X%20-%20X.min%28axis%3D0%29%29%20%7D%7B%20%28X.max%28axis%3D0%29%20-%20X.min%28axis%3D0%29%29%7D%20%5Ccdot%20%28max%20-%20min%29&plus;min)
+- [sktlearn-MinMaxScaler-归一化方法公式:](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html) ![归一化完整公式](https://private.codecogs.com/gif.latex?X_scaled%20%3D%20%5Cfrac%7B%20%28X%20-%20X.min%28axis%3D0%29%29%20%7D%7B%20%28X.max%28axis%3D0%29%20-%20X.min%28axis%3D0%29%29%7D%20%5Ccdot%20%28max%20-%20min%29&plus;min)
 
 ### Promblem Resolved
 - 数据预处理:有效关键点个数\排除多目标干扰\多目标选择
