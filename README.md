@@ -1,6 +1,6 @@
 ## 基于姿态序列的人体行为识别-papercode
 
-### Some tutorial
+### Some Tutorials
 [莫烦Python](https://mofanpy.com/)
 
 [keras配置教程](https://www.pythonf.cn/read/123617)
