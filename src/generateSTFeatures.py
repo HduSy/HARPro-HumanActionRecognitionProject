@@ -1,7 +1,7 @@
 import os
 from src.readTxtData2Memory import readDataFromTxt
 from src.readTxtData2Memory import actions, txtDir, dataSet
-from src.utils import generateSpatialFeature, generateTempralFeature
+from src.utils import generateSpatialFeature, generateTempralLenFeature
 
 # actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
 action_type = 'handclapping'
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         else:
             # 同步取同一帧的空间分布特征和时间序列特征
             sFeature = generateSpatialFeature(x)
-            tFeature = generateTempralFeature(pre, x)
+            tFeature = generateTempralLenFeature(pre, x)
             # SFeatures.append(sFeature)
             # TFeatures.append(tFeature)
             write2Txt(fileDir, txtSpatialDataFile, sFeature, y['action'])

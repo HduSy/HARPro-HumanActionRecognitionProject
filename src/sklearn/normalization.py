@@ -22,3 +22,16 @@ frame01 = np.array([22.361, 16.031, 15.524, 10.63, 9.0, 16.763, 12.806, 13.0, 0.
                     21.84, 23.195, 23.537, 23.0, 88.193, 23.195, 23.195, 23.087, 25.632, 26.571, 26.926]).reshape(-1, 1)
 test_frame_sF = min_max_scaler.fit_transform(frame01)
 print(test_frame_sF.reshape(1, -1))
+
+frame02 = np.array([-21.185, 36.414, 19.964, 4.986, -26.635, -17.558, 14.514, 23.592, 45.,
+                    30.419, 13.572, -1.009, -41.15, 31.428, 5.45, 6.322, -9.077, 14.581,
+                    11.274, 12.445, -41.199, -14.978, -14.036, -9.622, 10.67]).reshape(-1, 1)
+test_frame_tf = min_max_scaler.fit_transform(frame02)
+print(test_frame_tf.reshape(1, -1))
+
+test_negtive = np.array([-21.185, 36.414, 19.964, 4.986, -26.635, -17.558, 14.514, 23.592, 45.,
+                         30.419, 13.572, -1.009, -41.15, 31.428, 5.45, 6.322, -9.077, 14.581,
+                         11.274, 12.445,-41.199,
+                         -14.978, -14.036, -9.622, 10.67]).reshape(-1, 1)
+test_negtive_minmax = min_max_scaler.fit_transform(test_negtive)
+print(test_negtive_minmax.reshape(1, -1))

@@ -18,11 +18,41 @@
 - [注意力机制](https://blog.csdn.net/uhauha2929/article/details/80733255)
 - [Understanding-LSTMs](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
 - [sktlearn-MinMaxScaler-归一化方法公式:](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html) ![归一化完整公式](https://private.codecogs.com/gif.latex?X_scaled%20%3D%20%5Cfrac%7B%20%28X%20-%20X.min%28axis%3D0%29%29%20%7D%7B%20%28X.max%28axis%3D0%29%20-%20X.min%28axis%3D0%29%29%7D%20%5Ccdot%20%28max%20-%20min%29&plus;min)
+- [模型过拟合问题](https://blog.csdn.net/weixin_43593330/article/details/103799225)
+- [特征融合](http://html.rhhz.net/buptjournal/html/20170401.htm)
 
 ### Promblem Resolved
 - 数据预处理:有效关键点个数\排除多目标干扰\多目标选择
 - 稀疏采样
-- 正则化解决Spatial Feature尺度归一避免SIFT复杂化
-- 特征融合
+- 归一化[0,1]解决Spatial Feature尺度归一避免传统图像识别领域SIFT复杂化方法
+- 归一化[-1,1]解决Tempral Angle Feature?
 - 注意力机制怎么加
+- Temperal Feature特征采用角度特征 来避免d2类视频中缩放造成的尺度变化对距离特征的影响-准确率有所提高3-5个百分点
+  1. (1,8)<===>(2,3)
+  2. (1,8)<===>(5,6)
+  3. (1,8)<===>(3,4)
+  4. (1,8)<===>(6,7)
+  5. (2,3)<===>(9,10)
+  6. (2,3)<===>(10,11)
+  7. (3,4)<===>(9,10)
+  8. (3,4)<===>(10,11)
+  9. (5,6)<===>(12,13)
+  10. (5,6)<===>(13,14)
+  11. (6,7)<===>(12,13)
+  12. (6,7)<===>(13,14)
+  13. (3,2)<===>(3,4)
+  14. (6,5)<===>(6,7)
+  15. (8,1)<===>(9,10)
+  16. (8,1)<===>(12,13)
+  17. (10,9)<===>(10,11)
+  18. (13,12)<===>(13,14)
+  19. (11,10)<===>(11,12)
+  20. (14,13)<===>(14,19)
+  21. (2,3)<===>(5,6)
+  22. (3,4)<===>(6,7)
+  23. (9,10)<===>(12,13)
+  24. (10,11)<===>(13,14)
+  25. (11,22)<===>(14,19)
+- 参数过多导致过拟合问题
+- 特征融合(特征级融合属于先映射融合)
 - 网络模型如何进一步堆叠
