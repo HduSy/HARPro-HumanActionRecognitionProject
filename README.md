@@ -20,13 +20,13 @@
 - [sktlearn-MinMaxScaler-归一化方法公式:](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html) ![归一化完整公式](https://private.codecogs.com/gif.latex?X_scaled%20%3D%20%5Cfrac%7B%20%28X%20-%20X.min%28axis%3D0%29%29%20%7D%7B%20%28X.max%28axis%3D0%29%20-%20X.min%28axis%3D0%29%29%7D%20%5Ccdot%20%28max%20-%20min%29&plus;min)
 - [模型过拟合问题](https://blog.csdn.net/weixin_43593330/article/details/103799225)
 - [特征融合](http://html.rhhz.net/buptjournal/html/20170401.htm)
+- [保存自定义层加载模型文件错误时解决方案](https://blog.csdn.net/program_developer/article/details/90453946)
 
 ### Promblem Resolved
-- 数据预处理:有效关键点个数\排除多目标干扰\多目标选择
+- 数据预处理:有效关键点个数\排除多目标干扰\多目标选择 raw data->sample data->feature data->net design->train & test
 - 稀疏采样
 - 归一化[0,1]解决Spatial Feature尺度归一避免传统图像识别领域SIFT复杂化方法
-- 归一化[-1,1]解决Tempral Angle Feature?
-- 注意力机制怎么加
+- 归一化[-1,1]解决Tempral Angle Feature? No!角度特征归一化无意义
 - Temperal Feature特征采用角度特征 来避免d2类视频中缩放造成的尺度变化对距离特征的影响-准确率有所提高3-5个百分点
   1. (1,8)<===>(2,3)
   2. (1,8)<===>(5,6)
@@ -53,6 +53,7 @@
   23. (9,10)<===>(12,13)
   24. (10,11)<===>(13,14)
   25. (11,22)<===>(14,19)
-- 参数过多导致过拟合问题
+- 参数过多导致过拟合问题 dropout=0.7效果最佳
 - 特征融合(特征级融合属于先映射融合)
-- 网络模型如何进一步堆叠
+- 添加注意力机制
+- 网络模型设计

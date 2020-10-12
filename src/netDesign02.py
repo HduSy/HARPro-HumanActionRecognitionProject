@@ -25,22 +25,28 @@ add_attention = True  # False
 # LSTM test accuracy: 0.9299362897872925
 # LSTM test score: 0.1824791385489664
 # LSTM test accuracy: 0.9363057613372803
-dropout_rate = 0.8
+dropout_rate = 0.7
 # TODO:使用DropOut解决过拟合问题
 # with dropout layer
-# 0.9
-# LSTM test score: 0.16199284065870723
-# LSTM test accuracy: 0.9299362897872925
-# 0.8 the best the best the best the best
+# 0.9 the worst the worst
+# LSTM test score: 0.1813722895778668
+# LSTM test accuracy: 0.9197452068328857
+# 0.8
 # LSTM test score: 0.10659453525285052
 # LSTM test accuracy: 0.9617834687232971
-# LSTM test score: 0.12854519761671687
-# LSTM test accuracy: 0.9426751732826233
-# LSTM test score: 0.1091721070135475
+# LSTM test score: 0.14374726240042668
+# LSTM test accuracy: 0.9566879272460938
+# LSTM test score: 0.10404396607617664
 # LSTM test accuracy: 0.9554139971733093
-# 0.7
-# LSTM test score: 0.10670858781049206
-# LSTM test accuracy: 0.9605095386505127
+# 0.7 the best choice
+# LSTM test score: 0.10748951110490568
+# LSTM test accuracy: 0.9617834687232971
+# LSTM test score: 0.15825679637254422
+# LSTM test accuracy: 0.950318455696106
+# LSTM test score: 0.16507906508483705
+# LSTM test accuracy: 0.9719745516777039
+# LSTM test score: 0.16759948813516623
+# LSTM test accuracy: 0.9566879272460938
 # 0.6
 # LSTM test score: 0.1138901218487199
 # LSTM test accuracy: 0.9579617977142334
@@ -64,10 +70,12 @@ n_classes = 6
 
 txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
 actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
+model_filename = 'F:\\XLDownload\\dataSet\\KTH\HARPro\\src\\model-file\\HAR.h5'
 
 
+# 模型训练
 def train(x_train, y_train, x_test, y_test):
-    print('begin training...')
+    print('begin model training...')
     global model
     adam = Adam(lr=learning_rate)
 
@@ -86,17 +94,27 @@ def train(x_train, y_train, x_test, y_test):
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
     model.fit(x_train, y_train, batch_size=batch_size, epochs=training_iters, verbose=1,
               validation_data=(x_test, y_test))
-    print('training end...')
+    print('model trained.')
 
 
+# 模型测试
 def test():
-    print('start testing...')
+    print('begin model testing...')
     global model
-    scores = model.evaluate(x_test, y_test, verbose=0)
-    # TODO:scores长什么样，分别代表什么意义
+    scores = model.evaluate(x_test, y_test, verbose=1)
+    # loss, accuracy
     print('LSTM test score:', scores[0])
     print('LSTM test accuracy:', scores[1])
-    print('testing end...')
+    print('model tested.')
+
+
+# 模型保存
+def save():
+    print('begin model saving...')
+    global model
+    model.save(model_filename)
+    del model
+    print('model saved.')
 
 
 if __name__ == '__main__':
@@ -120,5 +138,6 @@ if __name__ == '__main__':
     begin = time()
     train(x_train, y_train, x_test, y_test)
     end = time()
-    test()
     print('程序训练时长约%.1fmin' % ((end - begin) / 60))
+    test()
+    save()

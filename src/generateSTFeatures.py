@@ -1,7 +1,7 @@
 import os
 from src.readTxtData2Memory import readDataFromTxt
-from src.readTxtData2Memory import actions, txtDir, dataSet
-from src.utils import generateSpatialFeature, generateTempralLenFeature
+from src.readTxtData2Memory import txtDir, dataSet
+from src.utils.utils import generateSpatialFeature, generateTempralLenFeature
 
 # actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
 action_type = 'handclapping'

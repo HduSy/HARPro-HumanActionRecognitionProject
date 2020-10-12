@@ -31,7 +31,14 @@ print(test_frame_tf.reshape(1, -1))
 
 test_negtive = np.array([-21.185, 36.414, 19.964, 4.986, -26.635, -17.558, 14.514, 23.592, 45.,
                          30.419, 13.572, -1.009, -41.15, 31.428, 5.45, 6.322, -9.077, 14.581,
-                         11.274, 12.445,-41.199,
+                         11.274, 12.445, -41.199,
                          -14.978, -14.036, -9.622, 10.67]).reshape(-1, 1)
 test_negtive_minmax = min_max_scaler.fit_transform(test_negtive)
 print(test_negtive_minmax.reshape(1, -1))
+
+# 归一化[-1, 1]
+min_max_scaler = MinMaxScaler(feature_range=(-1, 1))
+test_n2a = np.array([-4, -3, -2, -1, 0, 1, 2, 3, 4]).reshape(-1, 1)  # (9, 1)
+
+test_n2a_minmax = min_max_scaler.fit_transform(test_n2a).reshape(1, -1)  # (1, 9)
+print(test_n2a_minmax)

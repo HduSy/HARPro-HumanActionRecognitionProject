@@ -5,7 +5,7 @@ from string import Template
 from sklearn.preprocessing import MinMaxScaler
 
 body_25_key_points_number = 25  # 我们的模型25个关键点
-commands_file = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\src\\python-lrn\\command.txt'
+commands_file = '/src/python-lrn/command.txt'
 command_list = []
 frame01 = [{'x': 76, 'y': 22, 'score': 0.852835}, {'x': 82, 'y': 32, 'score': 0.754131},
            {'x': 80, 'y': 31, 'score': 0.645748}, {'x': 70, 'y': 36, 'score': 0.717755},
@@ -137,7 +137,13 @@ def euclidDistance(x1, y1, x2, y2):
 
 
 # 特征融合方法
-def fusion(f1, f2, w1, w2):
+# weight-fusion
+# w1=1, w2=0.1
+# LSTM test score: 0.20608791100561238
+# LSTM test accuracy: 0.9668790102005005
+# LSTM test score: 0.19811472976268832
+# LSTM test accuracy: 0.9617834687232971
+def fusion(f1, f2, w1=1, w2=0.1):
     return f1 * w1 + f2 * w2
 
 
@@ -314,7 +320,7 @@ def generateTempralAngleFeature(preKeyPointList, curKeyPointList, norminalize=Fa
     preKeyPointAngleList = getPersonKeyPointAngleList(preKeyPointList)
     curKeyPointAngleList = getPersonKeyPointAngleList(curKeyPointList)
     feature = np.array(curKeyPointAngleList) - np.array(preKeyPointAngleList)
-    print(feature.shape)
+    # print(feature.shape)
     if norminalize:
         feature = min_max_scaler.fit_transform(feature.reshape(-1, 1))
         feature = feature.reshape(25, )  # (25,1)

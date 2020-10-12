@@ -1,7 +1,7 @@
 import numpy as np
 from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
-from src.utils import generateSpatialFeature, generateTempralLenFeature, generateTempralAngleFeature
+from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature
 from src.loadFeatureDataTxt2Mem import fusion
 
 actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
@@ -22,9 +22,12 @@ regularization = True  # 归一化与否
 # with tempral len feature regularization 稍有降低但基本不变 d2缩放造成的尺度变化对距离特征的影响
 # LSTM test score: 0.2668888951088213
 # LSTM test accuracy: 0.8955414295196533
-# with tempral angle feature regularization 提高了很高啊
-# LSTM test score: 0.14451440487792538
-# LSTM test accuracy: 0.9490445852279663
+# without tempral angle feature regularization
+# LSTM test score: 0.15871618061688295
+# LSTM test accuracy: 0.9579617977142334
+# with tempral angle feature regularization 降低了 因为对角度进行归一化不科学
+# LSTM test score: 0.20507974412031235
+# LSTM test accuracy: 0.9375796318054199
 m = 0.9  # 训练集测试集划分比例
 trainsize = None  # 训练集大小
 xn = []
@@ -60,13 +63,12 @@ def readDataFromTxt(filePath):
             else:
                 # 同步取同一帧的空间分布特征和时间序列特征
                 sFeature = generateSpatialFeature(x, norminalize=regularization)
-                # tFeature = generateTempralLenFeature(pre, x, norminalize=regularization)
-                tFeature = generateTempralAngleFeature(pre, x)
+                tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                # print(x)
                 # print(sFeature)
                 # print(tFeature)
                 # input()
-                # TODO:fusion存的是np.ndarray
-                fragment.append(fusion(sFeature, tFeature, 1, 2))
+                fragment.append(fusion(sFeature, tFeature, 1, 0.1))
                 # 取frameNum帧作为一个序列样本
                 if len(fragment) == frameNum:
                     dataSet.append([fragment, y['action']])

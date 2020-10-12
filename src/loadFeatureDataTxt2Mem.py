@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import fusion
+from src.utils.utils import fusion
 txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\all'
 x_train = []
 x_test = []
