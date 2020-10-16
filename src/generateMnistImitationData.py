@@ -10,7 +10,7 @@ dataSet = []
 SFeatures = []
 TFeatures = []
 space = 1  # 稀疏间隔
-frameNum = 25  # n_input time_step步长
+frameNum = 25  # n_input time_step步长 TODO:可以做下对比实验啊
 regularization = True  # 归一化与否
 # TODO:使用归一化前后对模型准确率的影响
 # without regularization

@@ -24,7 +24,8 @@
 
 ### Promblem Resolved
 - 数据预处理:有效关键点个数\排除多目标干扰\多目标选择 raw data->sample data->feature data->net design->train & test
-- 稀疏采样
+- 稀疏采样[X]
+- 序列长度[5]
 - 归一化[0,1]解决Spatial Feature尺度归一避免传统图像识别领域SIFT复杂化方法
 - 归一化[-1,1]解决Tempral Angle Feature? No!角度特征归一化无意义
 - Temperal Feature特征采用角度特征 来避免d2类视频中缩放造成的尺度变化对距离特征的影响-准确率有所提高3-5个百分点
