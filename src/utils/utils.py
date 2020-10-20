@@ -244,7 +244,7 @@ def getPersonKeyPointAngleList(personKeyPointList):
                    personKeyPointList[14]['x'], personKeyPointList[14]['y'])
     pair19 = angle(personKeyPointList[11]['x'], personKeyPointList[11]['y'], personKeyPointList[10]['x'],
                    personKeyPointList[10]['y'], personKeyPointList[11]['x'], personKeyPointList[11]['y'],
-                   personKeyPointList[12]['x'], personKeyPointList[12]['y'])
+                   personKeyPointList[22]['x'], personKeyPointList[22]['y'])
     pair20 = angle(personKeyPointList[14]['x'], personKeyPointList[14]['y'], personKeyPointList[13]['x'],
                    personKeyPointList[13]['y'], personKeyPointList[14]['x'], personKeyPointList[14]['y'],
                    personKeyPointList[19]['x'], personKeyPointList[19]['y'])
