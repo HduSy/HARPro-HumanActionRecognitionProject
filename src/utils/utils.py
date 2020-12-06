@@ -139,13 +139,26 @@ def euclidDistance(x1, y1, x2, y2):
 # 特征融合方法
 # weight-fusion
 # w1=1, w2=0.1
-# LSTM test score: 0.20608791100561238
-# LSTM test accuracy: 0.9668790102005005
-# LSTM test score: 0.19811472976268832
-# LSTM test accuracy: 0.9617834687232971
+# concat
+# LSTM test score: 0.2191613094896007
+# LSTM test accuracy: 0.9566879272460938
 def fusion(f1, f2, w1=1, w2=0.1):
     return f1 * w1 + f2 * w2
-
+# mean
+# LSTM test score: 0.22725442759929948
+# LSTM test accuracy: 0.9681528806686401
+def fusionMean(f1, f2):
+    return (f1 + f2)/2
+# max
+# LSTM test score: 0.19907013450743286
+# LSTM test accuracy: 0.9490445852279663
+def fusionMax(f1, f2):
+    return np.where(f1 > f2, f1, f2)
+# min
+# LSTM test score: 0.1777873030893362
+# LSTM test accuracy: 0.9554139971733093
+def fusionMin(f1, f2):
+    return np.where(f1 < f2, f1, f2)
 
 # 将[{'x':76,'y':22,'score':0.852835},{},{}...]转化为[[76,22],[],[]...] or [76,22,......] (前者吧 x、y两维分别独立归一化)
 def keyPointList2List(personKeyPointList):
@@ -310,7 +323,7 @@ def generateTempralLenFeature(preKeyPointList, curKeyPointList, norminalize=Fals
         EDistance = np.sqrt(np.sum(np.square(preKeyPointArray - curKeyPointArray)))
         feature.append(round(float(EDistance), 3))
     # print(feature)
-    return feature
+    return np.array(feature)
 
 
 # TODO:时间序列特征---角度 可能并不需要归一化，归一化没意义不像spatial feature 25组[x, y]归一化后有意义

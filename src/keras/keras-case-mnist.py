@@ -60,7 +60,6 @@ model.summary()
 model.compile(optimizer=adam,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
-
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=training_iters,

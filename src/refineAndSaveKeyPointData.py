@@ -3,8 +3,8 @@ import json
 import numpy as np
 from time import *
 
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
-action_type = 'boxing'
+actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling1_8', 'falling2_0']
+action_type = 'falling2_0'
 dataSetDir = 'F:\\XLDownload\\dataSet\\KTH\\' + action_type + '\\' + action_type + '-video'
 boxing_result_data = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type + '\\' + action_type + '-result-data.txt'
 fileDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type
@@ -218,8 +218,8 @@ def write2Txt(fileDir, fileName, x, y):
 
 
 if __name__ == '__main__':
-    global all_frames_effect_keyPointInfo
-    global fileDir, txtFile
+    # global all_frames_effect_keyPointInfo
+    # global fileDir, txtFile
     readKeyPointJSONFile()
     beginTime = time()  # 开始计时
     # 存入.txt文件

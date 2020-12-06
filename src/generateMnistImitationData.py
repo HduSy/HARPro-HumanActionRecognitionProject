@@ -1,10 +1,11 @@
 import numpy as np
 from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
-from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature
-from src.loadFeatureDataTxt2Mem import fusion
+from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
+from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
 
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
+actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling']
+# actions = ['falling1_8', 'falling2_0']
 txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
 dataSet = []
 SFeatures = []
@@ -32,18 +33,22 @@ m = 0.9  # 训练集测试集划分比例
 trainsize = None  # 训练集大小
 xn = []
 yn = []
+spatialN = []
+temporalN = []
 
 
 def readDataFromTxt(filePath):
-    global txtDir, actions, dataSet, xn, yn, trainsize
+    global txtDir, actions, dataSet, xn, yn, trainsize, spatialN, temporalN
     tmp = []
     fragment = []
+    spatial_fragment = []
+    temporal_fragment = []
     if regularization:
         print('归一化 spatial feature')
     else:
         print('未采用归一化策略')
     # 遍历所有动作数据集
-    for index in range(6):
+    for index in range(len(actions)):
         print('处理%s动作' % actions[index])
         filePath += '\\' + actions[index] + '\\' + actions[index] + '-result-data.txt'
         # 取一种动作
@@ -64,15 +69,25 @@ def readDataFromTxt(filePath):
                 # 同步取同一帧的空间分布特征和时间序列特征
                 sFeature = generateSpatialFeature(x, norminalize=regularization)
                 tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                # tFeature = generateTempralLenFeature(pre, x, norminalize=False)
                 # print(x)
                 # print(sFeature)
                 # print(tFeature)
                 # input()
-                fragment.append(fusion(sFeature, tFeature, 1, 0.1))
+                # fragment.append(fusion(sFeature, tFeature, 1, 0.8))
+                # fragment.append(fusionMean(sFeature, tFeature))
+                # fragment.append(fusionMax(sFeature, tFeature))
+                # fragment.append(fusionMin(sFeature, tFeature))
+                spatial_fragment.append(sFeature)
+                temporal_fragment.append(tFeature)
                 # 取frameNum帧作为一个序列样本
-                if len(fragment) == frameNum:
-                    dataSet.append([fragment, y['action']])
-                    fragment = []
+                # if len(fragment) == frameNum:
+                #     dataSet.append([fragment, y['action']])
+                #     fragment = []
+                if len(spatial_fragment) == frameNum:
+                    dataSet.append([spatial_fragment, temporal_fragment, y['action']])
+                    spatial_fragment = []
+                    temporal_fragment = []
                 pre = x
             i += space
         # 更新tmp&filePath
@@ -82,12 +97,20 @@ def readDataFromTxt(filePath):
     np.random.shuffle(dataSet)
     # print(len(dataSet))  # 7842*frameNum(25)=196050 196063
     for i in range(len(dataSet)):
-        [x, y] = dataSet[i]
-        xn.append(x)
+        [x1, x2, y] = dataSet[i]
+        spatialN.append(x1)
+        temporalN.append(x2)
         yn.append(y)
-    xn = np.array(xn)
+        # [x, y] = dataSet[i]
+        # xn.append(x)
+        # yn.append(y)
+    # xn = np.array(xn)
+    spatialN = np.array(spatialN)
+    temporalN = np.array(temporalN)
     yn = np.array(yn)
     trainsize = int(m * len(dataSet))
+    return ((spatialN[:trainsize], temporalN[:trainsize], yn[:trainsize]),
+            (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:]))
     return ((xn[:trainsize], yn[:trainsize]), (xn[trainsize:], yn[trainsize:]))
     # return dataSet
 

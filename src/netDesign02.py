@@ -9,11 +9,11 @@ from src.keras.selflayers.AttentionLayer import AttentionLayer
 
 model = Sequential()
 learning_rate = 0.001
-training_iters = 30
+training_iters = 50
 # training_iters = 5
 batch_size = 128
 display_step = 10
-add_attention = True  # False
+add_attention = False  # False
 # TODO:使用注意力机制前后对模型准确率的影响
 # without attention
 # LSTM test score: 0.2682137036779124
@@ -25,7 +25,7 @@ add_attention = True  # False
 # LSTM test accuracy: 0.9299362897872925
 # LSTM test score: 0.1824791385489664
 # LSTM test accuracy: 0.9363057613372803
-dropout_rate = 0.7
+dropout_rate = 0.4
 # TODO:使用DropOut解决过拟合问题
 # with dropout layer
 # 0.9 the worst the worst
@@ -92,8 +92,9 @@ def train(x_train, y_train, x_test, y_test):
 
     model.summary()  # 输出模型各层的参数状况
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=training_iters, verbose=1,
+    hist = model.fit(x_train, y_train, batch_size=batch_size, epochs=training_iters, verbose=1,
               validation_data=(x_test, y_test))
+    print(hist.history)
     print('model trained.')
 
 
