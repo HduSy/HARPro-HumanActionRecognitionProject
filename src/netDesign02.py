@@ -10,6 +10,7 @@ from src.keras.selflayers.AttentionLayer import AttentionLayer
 model = Sequential()
 learning_rate = 0.001
 training_iters = 50
+dropout_rate = 0.4
 # training_iters = 5
 batch_size = 128
 display_step = 10
@@ -25,7 +26,6 @@ add_attention = False  # False
 # LSTM test accuracy: 0.9299362897872925
 # LSTM test score: 0.1824791385489664
 # LSTM test accuracy: 0.9363057613372803
-dropout_rate = 0.4
 # TODO:使用DropOut解决过拟合问题
 # with dropout layer
 # 0.9 the worst the worst
@@ -67,10 +67,7 @@ n_step = 25
 n_input = 25
 n_hidden = 128
 n_classes = 6
-
-txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
-model_filename = 'F:\\XLDownload\\dataSet\\KTH\HARPro\\src\\model-file\\HAR.h5'
+from src.public import txtDir, actions, model_filename
 
 
 # 模型训练

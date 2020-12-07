@@ -29,7 +29,9 @@ if __name__ == '__main__':
     right = 0
     print(spatial_test.shape)
     sample_num = spatial_test.shape[0]
+    # todo:有bug
     for i in range(sample_num):
+        # 预测这里的逻辑是有大问题的
         if predict([np.array(spatial_test), np.array(temporal_test)], y_test[i]):
             right += 1
     accuracy = (right / sample_num) * 100

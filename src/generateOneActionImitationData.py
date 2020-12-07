@@ -2,12 +2,11 @@ import numpy as np
 
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature
+from src.public import txtDir
 
 regularization = True  # 归一化与否
 frameNum = 25  # n_input time_step步长
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
-txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
-action_type = 'falling'
+# action_type = 'falling'
 dataSet = []
 spatialN = []
 temporalN = []
@@ -27,7 +26,7 @@ def readOneActionDataFromTxt(txtDir, action_type):
     else:
         print('未采用归一化策略')
     print('处理%s动作' % action_type)
-    filePath = txtDir + '\\' + action_type + '-result-data.txt'
+    filePath = txtDir + '\\' + action_type + '\\' + action_type + '-result-data.txt'
     # 取一种动作
     with open(filePath, 'r') as fileObj:
         line = fileObj.readline()
@@ -71,7 +70,3 @@ def readOneActionDataFromTxt(txtDir, action_type):
     trainsize = int(m * len(dataSet))
     return ((spatialN[:trainsize], temporalN[:trainsize], yn[:trainsize]),
             (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:]))
-
-
-if __name__ == '__main__':
-    txtDir += '\\' + action_type

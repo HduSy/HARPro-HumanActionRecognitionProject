@@ -1,11 +1,9 @@
 import os
-import json
-import numpy as np
 from time import *
-
+from src.public import txtDir
 actions = ['falling1_8', 'falling2_0']
 action_type = 'falling2_0'
-saveDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type
+saveDir = txtDir + '\\' + action_type
 saveTxtFile = action_type + '-result-data.txt'
 dataSetDir = 'F:\\XLDownload\\dataSet\\KTH\\' + action_type
 person_effect_keyPoints_minCount = 7  # 检测一个骨架是否是一个有效的人

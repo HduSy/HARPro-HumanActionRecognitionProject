@@ -1,9 +1,7 @@
-import os
 from time import time
+from src.public import actions, txtDir
 
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
 action_type = 'boxing'
-txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
 dataSet = []
 
 
@@ -27,8 +25,6 @@ def transformTxtLine2ListObj(line):
 
 
 def readDataFromTxt(filePath, all=False, actionType=None):
-    global txtDir
-    global actions
     if all:
         for index in range(6):
             filePath += '\\' + actions[index] + '\\' + actions[index] + '-result-data.txt'

@@ -1,13 +1,17 @@
 import os
 import json
-import numpy as np
 from time import *
+from src.public import txtDir
 
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling1_8', 'falling2_0']
+# actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling1_8', 'falling2_0']
 action_type = 'falling2_0'
+# TODO:对每种动作分别按训练集、测试集、验证集划分，这样predict时可按需加载
+train0_81 = 0.81
+test0__9 = 0.09
+val0_1 = 0.1
 dataSetDir = 'F:\\XLDownload\\dataSet\\KTH\\' + action_type + '\\' + action_type + '-video'
-boxing_result_data = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type + '\\' + action_type + '-result-data.txt'
-fileDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type
+boxing_result_data = txtDir + '\\' + action_type + '\\' + action_type + '-result-data.txt'
+fileDir = txtDir + '\\' + action_type
 txtFile = action_type + '-result-data.txt'
 
 person_effect_keyPoints_minCount = 10  # 检测一个骨架是否是一个有效的人
@@ -126,6 +130,7 @@ def makeChoiceWhichPeople(peopleList):
 input:从关键点数据json文件中提取的people格式化关键点数据
 condition:未检测到人时,return None;检测结果恰有一人时,正常处理;检测结果中多人时,取有效关键点最多那个目标为target.
 '''
+
 
 # TODO:有效关键点个数大于阈值判断为有效识别目标
 def getRefinedPersonKeyPointsInfo(keyPointsInfo):

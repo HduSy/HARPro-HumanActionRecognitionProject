@@ -10,6 +10,7 @@ from src.generateMnistImitationData import readDataFromTxt
 from src.keras.selflayers.AttentionLayer import AttentionLayer
 import os
 import keras.backend as K
+from src.public import txtDir, actions, model_filename
 from keras.callbacks import LearningRateScheduler
 from keras.callbacks import ReduceLROnPlateau
 
@@ -30,24 +31,20 @@ os.environ["PATH"] += os.pathsep + 'D:\\Program Files (x86)\\Graphviz2.38\\bin' 
 model = None
 learning_rate = 0.001
 training_iters = 27
+dropout_rate = 0.4
+# TODO:使用DropOut解决过拟合问题
 # training_iters = 5
-batch_size = 128
+batch_size = 128  # 每次梯度更新的样本数
 display_step = 10
 add_attention = True  # False
 # TODO:使用注意力机制前后对模型准确率的影响
 # https://zhuanlan.zhihu.com/p/77609689
-dropout_rate = 0.4
-# TODO:使用DropOut解决过拟合问题
+
 
 n_step = 25
 n_input = 25
 n_hidden = 128
 n_classes = 7  # 动作类别数
-
-txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling']
-# actions = ['falling1_8', 'falling2_0']
-model_filename = 'F:\\XLDownload\\dataSet\\KTH\HARPro\\src\\model-file\\HAR.h5'
 
 from attention import Attention
 
@@ -63,21 +60,26 @@ def train(x1_train, x2_train, y_train, x1_test, x2_test, y_test):
     # 空间注意力模块-空间关键点选择门
     # return_sequences:true返回所有中间隐藏值false返回最后一个隐藏值
     # shape=(samples, time_steps, input_dim)
-    x1 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=True,
-             unroll=True)(inputA)
     if add_attention:
+        x1 = GRU(n_hidden, batch_input_shape=(1, n_step, n_input), return_sequences=True,
+                 unroll=True)(inputA)
         x1 = AttentionLayer()(x1)
         # x1 = Attention()(x1)
+    else:
+        x1 = GRU(n_hidden, batch_input_shape=(1, n_step, n_input), return_sequences=False,
+                 unroll=True)(inputA)
     x1 = Dense(24, activation='tanh')(x1)
     spatialModal = Model(inputs=inputA, outputs=x1)
     # spatial_attention_module = Dense(n_classes)(spatial_attention_module)
     # 时间注意力模块-时间关键帧选择门
-    x2 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=True,
-             unroll=True)(inputB)
     if add_attention:
+        x2 = GRU(n_hidden, batch_input_shape=(1, n_step, n_input), return_sequences=True,
+                 unroll=True)(inputB)
         x2 = AttentionLayer()(x2)
         # x2 = Attention()(x2)
-
+    else:
+        x2 = GRU(n_hidden, batch_input_shape=(1, n_step, n_input), return_sequences=False,
+                 unroll=True)(inputB)
     x2 = Dense(24, activation='relu')(x2)
     temporalModal = Model(inputs=inputB, outputs=x2)
 

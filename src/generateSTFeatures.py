@@ -2,11 +2,11 @@ import os
 from src.readTxtData2Memory import readDataFromTxt
 from src.readTxtData2Memory import txtDir, dataSet
 from src.utils.utils import generateSpatialFeature, generateTempralLenFeature
+from src.public import txtDir
 
-# actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking']
 action_type = 'handclapping'
 space = 5
-fileDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action\\' + action_type
+fileDir = txtDir + '\\' + action_type
 txtSpatialDataFile = action_type + '-spatial-feature-%d-data.txt' % space
 txtTempralDataFile = action_type + '-tempral-feature-%d-data.txt' % space
 SFeatures = []

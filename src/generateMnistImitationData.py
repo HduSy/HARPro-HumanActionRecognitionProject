@@ -3,10 +3,9 @@ from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
 from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
+from src.public import actions, txtDir
 
-actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling']
 # actions = ['falling1_8', 'falling2_0']
-txtDir = 'F:\\XLDownload\\dataSet\\KTH\\HARPro\\action'
 dataSet = []
 SFeatures = []
 TFeatures = []
@@ -37,8 +36,8 @@ spatialN = []
 temporalN = []
 
 
-def readDataFromTxt(filePath):
-    global txtDir, actions, dataSet, xn, yn, trainsize, spatialN, temporalN
+def readDataFromTxt(filePath, test=False):
+    global dataSet, xn, yn, trainsize, spatialN, temporalN
     tmp = []
     fragment = []
     spatial_fragment = []
@@ -109,9 +108,19 @@ def readDataFromTxt(filePath):
     temporalN = np.array(temporalN)
     yn = np.array(yn)
     trainsize = int(m * len(dataSet))
-    return ((spatialN[:trainsize], temporalN[:trainsize], yn[:trainsize]),
-            (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:]))
-    return ((xn[:trainsize], yn[:trainsize]), (xn[trainsize:], yn[trainsize:]))
+    trainsize_t = int(trainsize * m)
+    # print(trainsize_t, trainsize, len(dataSet) - trainsize_t)
+
+    # train:[0:int(0.81 * 11337)], test:[int(0.81 * 11337):int(0.9 * 11337)]
+    # predict:[int(0.9 * 11337):11337]
+    if test:
+        # 未参与到训练0.1
+        return (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:])
+    else:
+        # 0.9中0.81训练集0.09测试集
+        return ((spatialN[:trainsize_t], temporalN[:trainsize_t], yn[:trainsize_t]),
+                (spatialN[trainsize_t:trainsize], temporalN[trainsize_t:trainsize], yn[trainsize_t:trainsize]))
+    # return ((xn[:trainsize], yn[:trainsize]), (xn[trainsize:], yn[trainsize:]))
     # return dataSet
 
 
