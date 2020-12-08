@@ -10,7 +10,7 @@ from src.generateMnistImitationData import readDataFromTxt
 from src.keras.selflayers.AttentionLayer import AttentionLayer
 import os
 import keras.backend as K
-from src.public import txtDir, actions, model_filename
+from src.public import txtDir, actions, model_filename, add_attention
 from keras.callbacks import LearningRateScheduler
 from keras.callbacks import ReduceLROnPlateau
 
@@ -36,7 +36,7 @@ dropout_rate = 0.4
 # training_iters = 5
 batch_size = 128  # 每次梯度更新的样本数
 display_step = 10
-add_attention = True  # False
+# add_attention = True  # False
 # TODO:使用注意力机制前后对模型准确率的影响
 # https://zhuanlan.zhihu.com/p/77609689
 

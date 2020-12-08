@@ -3,7 +3,7 @@ from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
 from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
-from src.public import actions, txtDir
+from src.public import actions, txtDir, regularization
 
 # actions = ['falling1_8', 'falling2_0']
 dataSet = []
@@ -11,7 +11,7 @@ SFeatures = []
 TFeatures = []
 space = 1  # 稀疏间隔
 frameNum = 25  # n_input time_step步长 TODO:可以做下对比实验啊
-regularization = True  # 归一化与否
+# regularization = False  # 归一化与否
 # TODO:使用归一化前后对模型准确率的影响
 # without regularization
 # LSTM test score: 0.19241959800006478
@@ -67,8 +67,8 @@ def readDataFromTxt(filePath, test=False):
             else:
                 # 同步取同一帧的空间分布特征和时间序列特征
                 sFeature = generateSpatialFeature(x, norminalize=regularization)
-                tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
-                # tFeature = generateTempralLenFeature(pre, x, norminalize=False)
+                # tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                tFeature = generateTempralLenFeature(pre, x, norminalize=False)
                 # print(x)
                 # print(sFeature)
                 # print(tFeature)
@@ -126,7 +126,8 @@ def readDataFromTxt(filePath, test=False):
 
 if __name__ == '__main__':
     begin = time()
-    ((x_train, y_train), (x_test, y_test)) = readDataFromTxt(txtDir)
+    # ((x_train, y_train), (x_test, y_test)) = readDataFromTxt(txtDir)
+    ((spatial_train, temporal_train, y_train), (spatial_test, temporal_test, y_test)) = readDataFromTxt(txtDir)
     end = time()
     print('程序处理时长约%.1fmin' % ((end - begin) / 60))
     # print(x_train, y_train)

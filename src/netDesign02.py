@@ -14,7 +14,7 @@ dropout_rate = 0.4
 # training_iters = 5
 batch_size = 128
 display_step = 10
-add_attention = False  # False
+# add_attention = False  # False
 # TODO:使用注意力机制前后对模型准确率的影响
 # without attention
 # LSTM test score: 0.2682137036779124
@@ -67,7 +67,7 @@ n_step = 25
 n_input = 25
 n_hidden = 128
 n_classes = 6
-from src.public import txtDir, actions, model_filename
+from src.public import txtDir, actions, model_filename, add_attention
 
 
 # 模型训练

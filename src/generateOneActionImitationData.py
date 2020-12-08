@@ -2,9 +2,9 @@ import numpy as np
 
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature
-from src.public import txtDir
+from src.public import txtDir, regularization
 
-regularization = True  # 归一化与否
+# regularization = True  # 归一化与否
 frameNum = 25  # n_input time_step步长
 # action_type = 'falling'
 dataSet = []
