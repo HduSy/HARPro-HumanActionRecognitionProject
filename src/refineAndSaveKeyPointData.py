@@ -206,6 +206,21 @@ def write2Txt(fileDir, fileName, x, y):
     fileObj.write(line)
     # fileObj.close()
 
+# 将shuffled dataSet持久化
+def write2Txt2(fileDir, fileName, x1, x2, y):
+    if not os.path.exists(fileDir):
+        os.mkdir(fileDir)
+    fileObj = open(fileDir + '\\' + fileName, mode='a', encoding="utf-8")
+    line = ''
+    for i in range(25):
+        for j in range(25):
+            line += str(x1[i][j]) + ' '
+    for i in range(25):
+        for j in range(25):
+            line += str(x2[i][j]) + ' '
+    line += y + '\n'
+    fileObj.write(line)
+
 
 # 将关键点结果及动作标签写入txt
 # def write2Txt(filePath, x, y):
@@ -242,39 +257,3 @@ if __name__ == '__main__':
             print('all_frames_effect_keyPointInfo保存的是所有非None personKeyPointInfo数据,不再会打印这行')
     endTime = time()  # 结束计时
     print('写结果用时%.3f' % (endTime - beginTime))
-    what_action = [{'score': 0.309807, 'x': 81, 'y': 22}, {'score': 0.6664, 'x': 90, 'y': 30},
-                   {'score': 0.523754, 'x': 92, 'y': 28}, {'score': 0.211789, 'x': 81, 'y': 40},
-                   {'score': 0.301164, 'x': 71, 'y': 35}, {'score': 0.71309, 'x': 90, 'y': 30},
-                   {'score': 0.714676, 'x': 79, 'y': 39}, {'score': 0.786523, 'x': 69, 'y': 32},
-                   {'score': 0.605353, 'x': 87, 'y': 55}, {'score': 0.492125, 'x': 85, 'y': 55},
-                   {'score': 0.621014, 'x': 83, 'y': 75}, {'score': 0.750422, 'x': 84, 'y': 92},
-                   {'score': 0.620267, 'x': 89, 'y': 56}, {'score': 0.653355, 'x': 87, 'y': 76},
-                   {'score': 0.686467, 'x': 89, 'y': 95}, {'score': 0.0, 'x': 0, 'y': 0},
-                   {'score': 0.384614, 'x': 82, 'y': 20}, {'score': 0.0, 'x': 0, 'y': 0},
-                   {'score': 0.578789, 'x': 86, 'y': 21}, {'score': 0.645289, 'x': 80, 'y': 97},
-                   {'score': 0.582743, 'x': 82, 'y': 99}, {'score': 0.635565, 'x': 90, 'y': 98},
-                   {'score': 0.640339, 'x': 77, 'y': 95}, {'score': 0.599087, 'x': 77, 'y': 94},
-                   {'score': 0.382946, 'x': 84, 'y': 94}, {'action': action_type}]
-    multiple_people = [
-        [{'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.473364, 'y': 28, 'x': 87},
-         {'score': 0.75996, 'y': 28, 'x': 74}, {'score': 0.787292, 'y': 22, 'x': 64}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}],
-        [{'score': 0.808931, 'y': 17, 'x': 83}, {'score': 0.7005, 'y': 27, 'x': 91},
-         {'score': 0.343746, 'y': 27, 'x': 94}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.409628, 'y': 27, 'x': 90}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.569378, 'y': 56, 'x': 91}, {'score': 0.438814, 'y': 56, 'x': 89},
-         {'score': 0.499366, 'y': 79, 'x': 90}, {'score': 0.614122, 'y': 99, 'x': 90},
-         {'score': 0.579334, 'y': 56, 'x': 92}, {'score': 0.606358, 'y': 79, 'x': 92},
-         {'score': 0.649499, 'y': 101, 'x': 94}, {'score': 0.0, 'y': 0, 'x': 0},
-         {'score': 0.832856, 'y': 16, 'x': 84}, {'score': 0.0, 'y': 0, 'x': 0}, {'score': 0.82105, 'y': 17, 'x': 89},
-         {'score': 0.519615, 'y': 103, 'x': 86},
-         {'score': 0.548015, 'y': 105, 'x': 89}, {'score': 0.534763, 'y': 103, 'x': 96},
-         {'score': 0.619152, 'y': 100, 'x': 81},
-         {'score': 0.515785, 'y': 99, 'x': 82}, {'score': 0.374898, 'y': 100, 'x': 90}]]

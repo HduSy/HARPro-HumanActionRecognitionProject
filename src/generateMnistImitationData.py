@@ -3,7 +3,8 @@ from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
 from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
-from src.public import actions, txtDir, regularization
+from src.public import actions, txtDir, regularization, anglization
+from src.refineAndSaveKeyPointData import write2Txt, write2Txt2
 
 # actions = ['falling1_8', 'falling2_0']
 dataSet = []
@@ -34,10 +35,13 @@ xn = []
 yn = []
 spatialN = []
 temporalN = []
+spatialN_test = []
+temporalN_test = []
+yn_test = []
 
-
-def readDataFromTxt(filePath, test=False):
-    global dataSet, xn, yn, trainsize, spatialN, temporalN
+# 读取所有动作的数据到dataSet,并打乱以便于存储
+def makeDataSetFromTxt(filePath):
+    global dataSet
     tmp = []
     fragment = []
     spatial_fragment = []
@@ -67,8 +71,10 @@ def readDataFromTxt(filePath, test=False):
             else:
                 # 同步取同一帧的空间分布特征和时间序列特征
                 sFeature = generateSpatialFeature(x, norminalize=regularization)
-                # tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
-                tFeature = generateTempralLenFeature(pre, x, norminalize=False)
+                if anglization:
+                    tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                else:
+                    tFeature = generateTempralLenFeature(pre, x, norminalize=False)
                 # print(x)
                 # print(sFeature)
                 # print(tFeature)
@@ -94,43 +100,138 @@ def readDataFromTxt(filePath, test=False):
         tmp = []
     # shuffle 洗牌打乱所有样本
     np.random.shuffle(dataSet)
-    # print(len(dataSet))  # 7842*frameNum(25)=196050 196063
-    for i in range(len(dataSet)):
-        [x1, x2, y] = dataSet[i]
-        spatialN.append(x1)
-        temporalN.append(x2)
-        yn.append(y)
-        # [x, y] = dataSet[i]
-        # xn.append(x)
-        # yn.append(y)
-    # xn = np.array(xn)
-    spatialN = np.array(spatialN)
-    temporalN = np.array(temporalN)
-    yn = np.array(yn)
+    return dataSet
+
+
+fileName = None
+
+
+# 再将持久化数据读到内存
+def loadAllShuffledDataFromTxt(filePath):
+    with open(filePath) as f:
+        line = f.readline()
+        # print(line)
+        # input()
+        while line:
+            tmp_arr = line.split(' ')[:-1]
+            lineArr = list(map(float, tmp_arr))
+            label = line.split(' ')[-1:][0].replace('\n', '')
+            # print(lineArr)
+            # input()
+            sampleSpatial = []
+            sampleTemporal = []
+            tmp = []
+            for i in range(0, 25 * 25):
+                tmp.append(lineArr[i])
+                if len(tmp) == 25:
+                    sampleSpatial.append(np.array(tmp))
+                    tmp = []
+            tmp = []
+            for i in range(25 * 25, 25 * 25 * 2):
+                tmp.append(lineArr[i])
+                if len(tmp) == 25:
+                    sampleTemporal.append(np.array(tmp))
+                    tmp = []
+            dataSet.append([sampleSpatial, sampleTemporal, label])
+            line = f.readline()
+            # print(dataSet)
+            # input()
+        return dataSet
+
+
+# test:是否是测试集
+def spliceDataSet(test=False):
+    global trainsize, dataSet, spatialN_test, temporalN_test, yn_test, spatialN, temporalN, yn, fileName
+    if regularization:
+        if anglization:
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-regularized-result-data.txt'
+        else:
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-regularized-result-data.txt'
+    else:
+        if anglization:
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-unregularized-result-data.txt'
+        else:
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-unregularized-result-data.txt'
+    dataSet = loadAllShuffledDataFromTxt(fileName)
+    # todo:划分训练集、验证集与测试集
     trainsize = int(m * len(dataSet))
     trainsize_t = int(trainsize * m)
     # print(trainsize_t, trainsize, len(dataSet) - trainsize_t)
 
     # train:[0:int(0.81 * 11337)], test:[int(0.81 * 11337):int(0.9 * 11337)]
-    # predict:[int(0.9 * 11337):11337]
+    # test:[int(0.9 * 11337):11337]
+    # print(len(dataSet))  # 7842*frameNum(25)=196050 196063
+    print(len(dataSet))
+    print('训练集大小:{0}'.format(trainsize))
     if test:
-        # 未参与到训练0.1
-        return (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:])
+        # todo:未参与到训练0.1测试集
+        dataSet_test = dataSet[trainsize:]
+        # np.random.shuffle(dataSet_test)
+        print('测试集大小{0}'.format(len(dataSet_test)))
+        for k in range(len(dataSet_test)):
+            [x1, x2, y] = dataSet_test[k]
+            spatialN_test.append(x1)
+            temporalN_test.append(x2)
+            yn_test.append(y)
+        spatialN_test = np.array(spatialN_test)
+        temporalN_test = np.array(temporalN_test)
+        yn_test = np.array(yn_test)
+        return (spatialN_test, temporalN_test, yn_test)
     else:
-        # 0.9中0.81训练集0.09测试集
-        return ((spatialN[:trainsize_t], temporalN[:trainsize_t], yn[:trainsize_t]),
-                (spatialN[trainsize_t:trainsize], temporalN[trainsize_t:trainsize], yn[trainsize_t:trainsize]))
-    # return ((xn[:trainsize], yn[:trainsize]), (xn[trainsize:], yn[trainsize:]))
-    # return dataSet
+        # todo:训练集0.9中0.81训练0.09验证
+        dataSet_train = dataSet[:trainsize]
+        # np.random.shuffle(dataSet_train)
+        valisize = int(trainsize * m)
+        # train = dataSet[:valisize]
+        # vali = dataSet[valisize:trainsize]
+        for j in range(len(dataSet_train)):
+            [x1, x2, y] = dataSet_train[j]
+            spatialN.append(x1)
+            temporalN.append(x2)
+            yn.append(y)
+        spatialN = np.array(spatialN)
+        temporalN = np.array(temporalN)
+        yn = np.array(yn)
+        print('训练集大小:{0},验证集大小:{1}'.format(len(spatialN[:valisize]), len(spatialN[valisize:trainsize])))
+        return ((spatialN[:valisize], temporalN[:valisize], yn[:valisize]),
+                (spatialN[valisize:trainsize], temporalN[valisize:trainsize], yn[valisize:trainsize]))
 
 
+# 将打乱后的dataSet持久化
 if __name__ == '__main__':
+    action_type = 'all-shuffled'
+    fileDir = txtDir + '\\' + action_type
+    if regularization:
+        print('归一化 spatial feature')
+        if anglization:
+            print('时序角度')
+            txtFile = action_type + '-angle-regularized-result-data.txt'
+        else:
+            print('时序距离')
+            txtFile = action_type + '-len-regularized-result-data.txt'
+    else:
+        print('未采用归一化策略')
+        if anglization:
+            print('时序角度')
+            txtFile = action_type + '-angle-unregularized-result-data.txt'
+        else:
+            print('时序距离')
+            txtFile = action_type + '-len-unregularized-result-data.txt'
     begin = time()
-    # ((x_train, y_train), (x_test, y_test)) = readDataFromTxt(txtDir)
-    ((spatial_train, temporal_train, y_train), (spatial_test, temporal_test, y_test)) = readDataFromTxt(txtDir)
+    allShuffledData = makeDataSetFromTxt(txtDir)
+    # print(allShuffledData)  # 验证写入与读出的dataSet结构是否一致
     end = time()
     print('程序处理时长约%.1fmin' % ((end - begin) / 60))
-    # print(x_train, y_train)
-    # print(type(x_train), type(y_train))
-    # net
+    begin = time()  # 开始计时
+    # 存入.txt文件
+    for i in range(len(allShuffledData)):
+        # print(all_frames_effect_keyPointInfo[i])
+        [spatialInfo, temporalInfo, actionType] = allShuffledData[i]
+        # print(allShuffledData[i])
+        # input()
+        # print(spatialInfo, temporalInfo, ' is ', actionType)
+        # 持久化dataSet
+        write2Txt2(fileDir, txtFile, spatialInfo, temporalInfo, actionType)
+    end = time()  # 结束计时
+    print('写结果用时%.3f' % (end - begin))
     pass

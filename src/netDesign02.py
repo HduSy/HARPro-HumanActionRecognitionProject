@@ -4,7 +4,7 @@ from keras.layers import LSTM
 from keras.layers import Dense, Activation, Dropout, LeakyReLU
 from keras.models import Sequential
 from keras.optimizers import Adam
-from src.generateMnistImitationData import readDataFromTxt
+from src.generateMnistImitationData import makeDataSetFromTxt
 from src.keras.selflayers.AttentionLayer import AttentionLayer
 
 model = Sequential()
@@ -67,7 +67,7 @@ n_step = 25
 n_input = 25
 n_hidden = 128
 n_classes = 6
-from src.public import txtDir, actions, model_filename, add_attention
+from src.public import txtDir, actions, model_filename, temporal_attention, spatial_attention
 
 
 # 模型训练
@@ -76,7 +76,7 @@ def train(x_train, y_train, x_test, y_test):
     global model
     adam = Adam(lr=learning_rate)
 
-    if add_attention:
+    if spatial_attention and temporal_attention:
         print('使用注意力机制')
         model.add(LSTM(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=True, unroll=True))
         model.add(AttentionLayer())
@@ -90,7 +90,7 @@ def train(x_train, y_train, x_test, y_test):
     model.summary()  # 输出模型各层的参数状况
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
     hist = model.fit(x_train, y_train, batch_size=batch_size, epochs=training_iters, verbose=1,
-              validation_data=(x_test, y_test))
+                     validation_data=(x_test, y_test))
     print(hist.history)
     print('model trained.')
 
@@ -117,7 +117,7 @@ def save():
 
 if __name__ == '__main__':
     begin = time()
-    ((x_train, y_train), (x_test, y_test)) = readDataFromTxt(txtDir)
+    ((x_train, y_train), (x_test, y_test)) = makeDataSetFromTxt(txtDir)
     end = time()
     print('程序处理时长约%.1fmin' % ((end - begin) / 60))
     print(x_train.shape)
