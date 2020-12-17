@@ -1,3 +1,5 @@
+import shutil
+from glob import glob
 from time import time
 import keras
 from keras.layers import LSTM, GRU
@@ -11,7 +13,7 @@ from src.keras.selflayers.AttentionLayer import AttentionLayer
 import os
 import keras.backend as K
 from src.public import txtDir, actions, model_filename, spatial_attention, temporal_attention
-from keras.callbacks import LearningRateScheduler
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.callbacks import ReduceLROnPlateau
 
 
@@ -49,9 +51,13 @@ from attention import Attention
 
 # 模型训练
 def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
+    K.clear_session()  # 清除之前的模型，省得压满内存
     print('begin model training...')
     global model
     adam = Adam(lr=learning_rate)
+    checkpoint_dir = 'checkpoints'
+    checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
+
     # 定义两个分支
     inputA = Input(shape=(n_step, n_input))
     inputB = Input(shape=(n_step, n_input))
@@ -97,9 +103,16 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
     model = Model(inputs=[spatialModal.input, temporalModal.input], outputs=z)
     model.summary()  # 输出模型各层的参数状况
     model.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
+    # delete folder and its content and creates a new one.
+    if os.path.exists(checkpoint_dir):
+        shutil.rmtree(checkpoint_dir)
+    os.makedirs(checkpoint_dir)
+    # 保存验证集上表现最好的某次模型
+    checkpoint = ModelCheckpoint(monitor='val_accuracy', save_best_only=True,
+                                 filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_accuracy:.3f}.h5'))
     # validation_data=([x1_vali, x2_vali], y1_vali), callbacks=[reduce_lr],
     hist = model.fit([x1_train, x2_train], y1_train, validation_split=0.33,
-                     validation_data=([x1_vali, x2_vali], y1_vali),
+                     validation_data=([x1_vali, x2_vali], y1_vali), callbacks=[checkpoint],
                      batch_size=batch_size, epochs=training_iters, verbose=1)
     print(hist.history)
     print('model trained.')

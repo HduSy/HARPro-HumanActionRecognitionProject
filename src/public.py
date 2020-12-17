@@ -2,7 +2,8 @@
 actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling']
 txtDir = 'F:\\Program Files (x86)\\PycharmProjects\\HARPro-HumanActionRecognitionProject\\action'
 action_type = 'boxing'
-model_filename = 'F:\\Program Files (x86)\\PycharmProjects\\HARPro-HumanActionRecognitionProject\\src\\model-file\\HAR.h5'
+# model_filename = 'F:\\Program Files (x86)\\PycharmProjects\\HARPro-HumanActionRecognitionProject\\src\\model-file\\HAR.h5'
+model_filename = 'F:\\Program Files (x86)\\PycharmProjects\\clone\\HARPro-HumanActionRecognitionProject\\src\\checkpoints\\model_17_0.973.h5'
 # 数据集配置
 regularization = True  # 归一化与否
 anglization = True  # 时序角度与否
