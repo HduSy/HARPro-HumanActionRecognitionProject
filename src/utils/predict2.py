@@ -58,7 +58,9 @@ if __name__ == '__main__':
     # todo:若将某一动作训练验证分开的话，这种调用是可行的
     # ((spatial_train, temporal_train, y_train), (spatial_test, temporal_test, y_test)) = readOneActionDataFromTxt(txtDir, action_type)
     # (spatial_test, temporal_test, y_test) = makeDataSetFromTxt(txtDir, test=True)
-    (spatial_test, temporal_test, y_test) = spliceDataSet(test=True)
+    # (spatial_test, temporal_test, y_test) = spliceDataSet(test=True)
+    ((spatial_train, temporal_train, y_train), (spatial_vali, temporal_vali, y_vali),
+     (spatial_test, temporal_test, y_test)) = spliceDataSet(test=False)
     # step1.读取某种动作数据(训练与测试分开)
     # (spatial_test, temporal_test, y_test) = makeDataSetFromTxt(txtDir, True)
     right = 0

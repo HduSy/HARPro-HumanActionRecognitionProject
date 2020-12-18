@@ -39,6 +39,7 @@ spatialN_test = []
 temporalN_test = []
 yn_test = []
 
+
 # 读取所有动作的数据到dataSet,并打乱以便于存储
 def makeDataSetFromTxt(filePath):
     global dataSet
@@ -155,7 +156,7 @@ def spliceDataSet(test=False):
     dataSet = loadAllShuffledDataFromTxt(fileName)
     # todo:划分训练集、验证集与测试集
     trainsize = int(m * len(dataSet))
-    trainsize_t = int(trainsize * m)
+    valisize = int(trainsize * m)
     # print(trainsize_t, trainsize, len(dataSet) - trainsize_t)
 
     # train:[0:int(0.81 * 11337)], test:[int(0.81 * 11337):int(0.9 * 11337)]
@@ -163,6 +164,18 @@ def spliceDataSet(test=False):
     # print(len(dataSet))  # 7842*frameNum(25)=196050 196063
     print(len(dataSet))
     print('训练集大小:{0}'.format(trainsize))
+    for j in range(len(dataSet)):
+        [x1, x2, y] = dataSet[j]
+        spatialN.append(x1)
+        temporalN.append(x2)
+        yn.append(y)
+    spatialN = np.array(spatialN)
+    temporalN = np.array(temporalN)
+    yn = np.array(yn)
+    # 训练集 验证集 测试集
+    return ((spatialN[:valisize], temporalN[:valisize], yn[:valisize]),
+            (spatialN[valisize:trainsize], temporalN[valisize:trainsize], yn[valisize:trainsize]),
+            (spatialN[trainsize:], temporalN[trainsize:], yn[trainsize:]))
     if test:
         # todo:未参与到训练0.1测试集
         dataSet_test = dataSet[trainsize:]

@@ -7,13 +7,13 @@ from keras.layers import Dense, Activation, Dropout, LeakyReLU, Input
 from keras.layers import add, subtract, multiply, average, maximum, concatenate, dot
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
-from keras.utils import plot_model
+from keras.utils import plot_model, to_categorical
 from src.generateMnistImitationData import makeDataSetFromTxt, spliceDataSet
 from src.keras.selflayers.AttentionLayer import AttentionLayer
 import os
 import keras.backend as K
 from src.public import txtDir, actions, model_filename, spatial_attention, temporal_attention
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau
 
 
@@ -51,11 +51,12 @@ from attention import Attention
 
 # 模型训练
 def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
+    K.clear_session()  # 清除之前的模型，省得压满内存
     print('begin model training...')
     global model
     adam = Adam(lr=learning_rate)
     checkpoint_dir = 'checkpoints'
-    checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
+    # checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
     # 定义两个分支
     inputA = Input(shape=(n_step, n_input))
     inputB = Input(shape=(n_step, n_input))
@@ -108,19 +109,25 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
     # 保存验证集上表现最好的某次模型
     checkpoint = ModelCheckpoint(monitor='val_accuracy', save_best_only=True,
                                  filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_accuracy:.3f}.h5'))
+    earlystop = EarlyStopping(
+        monitor='acc',  # 监控模型的验证精度
+        patience=2,  # 如果精度在多于一轮的时间（即两轮）内不再改善，中断训练
+    )
     # validation_data=([x1_vali, x2_vali], y1_vali), callbacks=[reduce_lr],
     hist = model.fit([x1_train, x2_train], y1_train, validation_split=0.33,
-                     validation_data=([x1_vali, x2_vali], y1_vali),callbacks=[checkpoint],
+                     validation_data=([x1_vali, x2_vali], y1_vali), callbacks=[checkpoint],
                      batch_size=batch_size, epochs=training_iters, verbose=1)
     print(hist.history)
     print('model trained.')
 
 
 # 模型测试
-def test():
+def test(x1_test, x2_test, y_test):
     print('begin model testing...')
     global model
-    scores = model.evaluate([spatial_vali, temporal_vali], y_vali, batch_size=32, verbose=1)
+    # scores = model.evaluate([spatial_vali, temporal_vali], y_vali, batch_size=32, verbose=1)
+    scores = model.evaluate([x1_test, x2_test], y_test, batch_size=32, verbose=1)
+    # print(scores)
     # loss, accuracy
     print('GRU test score:', scores[0])
     print('GRU test accuracy:', scores[1])
@@ -143,7 +150,8 @@ def save():
 
 if __name__ == '__main__':
     begin = time()
-    ((spatial_train, temporal_train, y_train), (spatial_vali, temporal_vali, y_vali)) = spliceDataSet(test=False)
+    ((spatial_train, temporal_train, y_train), (spatial_vali, temporal_vali, y_vali),
+     (spatial_test, temporal_test, y_test)) = spliceDataSet(test=False)
     end = time()
     print('程序处理时长约%.1fmin' % ((end - begin) / 60))
     print(spatial_train.shape)  # (7057, 25, 25)
@@ -153,15 +161,18 @@ if __name__ == '__main__':
         y_train[i] = actions.index(y_train[i])
     for i in range(len(y_vali)):
         y_vali[i] = actions.index(y_vali[i])
+    for i in range(len(y_test)):
+        y_test[i] = actions.index(y_test[i])
     # print(y_train[0], y_train[1], y_train[2])
-    y_train = keras.utils.to_categorical(y_train, n_classes)
-    y_vali = keras.utils.to_categorical(y_vali, n_classes)
+    y_train = to_categorical(y_train, n_classes)
+    y_vali = to_categorical(y_vali, n_classes)
+    y_test = to_categorical(y_test, n_classes)
     # print(x_train[0])
     # print(y_train[0], y_train[1], y_train[2])
     begin = time()
     train(spatial_train, temporal_train, y_train, spatial_vali, temporal_vali, y_vali)
     end = time()
     print('程序训练时长约%.1fmin' % ((end - begin) / 60))
-    test()
+    test(spatial_test, temporal_test, y_test)
     saveModelPng()
     save()
