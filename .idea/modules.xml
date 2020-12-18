@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/person01_walking_d1_uncomp.iml" filepath="$PROJECT_DIR$/.idea/person01_walking_d1_uncomp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/HARPro-HumanActionRecognitionProject.iml" filepath="$PROJECT_DIR$/.idea/HARPro-HumanActionRecognitionProject.iml" />
     </modules>
   </component>
 </project>
