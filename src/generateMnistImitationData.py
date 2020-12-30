@@ -1,9 +1,10 @@
 import numpy as np
 from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
-from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
+from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature, \
+    generateSpatialFeature2, generateTempralFeature2
 from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
-from src.public import actions, txtDir, regularization, anglization, frameNum
+from src.public import actions, txtDir, regularization, anglization, frameNum, inputA_dim, inputB_dim
 from src.refineAndSaveKeyPointData import write2Txt, write2Txt2
 
 # actions = ['falling1_8', 'falling2_0']
@@ -70,11 +71,14 @@ def makeDataSetFromTxt(filePath):
                 pre = x
             else:
                 # 同步取同一帧的空间分布特征和时间序列特征
-                sFeature = generateSpatialFeature(x, norminalize=regularization)
+                # sFeature = generateSpatialFeature(x, norminalize=regularization)
+                sFeature = generateSpatialFeature2(x, norminalize=regularization)
                 if anglization:
-                    tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                    # tFeature = generateTempralAngleFeature(pre, x, norminalize=False)
+                    tFeature = generateTempralFeature2(pre, x, anglization=anglization)
                 else:
-                    tFeature = generateTempralLenFeature(pre, x, norminalize=False)
+                    # tFeature = generateTempralLenFeature(pre, x, norminalize=False)
+                    tFeature = generateTempralFeature2(pre, x, anglization=anglization)
                 # print(x)
                 # print(sFeature)
                 # print(tFeature)
@@ -121,15 +125,15 @@ def loadAllShuffledDataFromTxt(filePath):
             sampleSpatial = []
             sampleTemporal = []
             tmp = []
-            for i in range(0, 25 * 25):
+            for i in range(0, frameNum * inputA_dim):
                 tmp.append(lineArr[i])
-                if len(tmp) == 25:
+                if len(tmp) == inputA_dim:
                     sampleSpatial.append(np.array(tmp))
                     tmp = []
             tmp = []
-            for i in range(25 * 25, 25 * 25 * 2):
+            for i in range(frameNum * inputA_dim, frameNum * inputA_dim + frameNum * inputB_dim):
                 tmp.append(lineArr[i])
-                if len(tmp) == 25:
+                if len(tmp) == inputB_dim:
                     sampleTemporal.append(np.array(tmp))
                     tmp = []
             dataSet.append([sampleSpatial, sampleTemporal, label])
@@ -144,14 +148,14 @@ def spliceDataSet(test=False):
     global trainsize, dataSet, spatialN_test, temporalN_test, yn_test, spatialN, temporalN, yn, fileName
     if regularization:
         if anglization:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-regularized-' + frameNum + 'result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-regularized-' + str(frameNum) + '-result-data.txt'
         else:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-regularized-' + frameNum + 'result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-regularized-' + str(frameNum) + '-result-data.txt'
     else:
         if anglization:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-unregularized-' + frameNum + 'result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-unregularized-' + str(frameNum) + '-result-data.txt'
         else:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-unregularized-' + frameNum + 'result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-unregularized-' + str(frameNum) + '-result-data.txt'
     dataSet = loadAllShuffledDataFromTxt(fileName)
     # todo:划分训练集、验证集与测试集
     trainsize = int(m * len(dataSet))
@@ -217,18 +221,18 @@ if __name__ == '__main__':
         print('归一化 spatial feature')
         if anglization:
             print('时序角度')
-            txtFile = action_type + '-angle-regularized-result-data.txt'
+            txtFile = action_type + '-angle-regularized-' + str(frameNum) + '-result-data.txt'
         else:
             print('时序距离')
-            txtFile = action_type + '-len-regularized-result-data.txt'
+            txtFile = action_type + '-len-regularized-' + str(frameNum) + '-result-data.txt'
     else:
         print('未采用归一化策略')
         if anglization:
             print('时序角度')
-            txtFile = action_type + '-angle-unregularized-result-data.txt'
+            txtFile = action_type + '-angle-unregularized-' + str(frameNum) + '-result-data.txt'
         else:
             print('时序距离')
-            txtFile = action_type + '-len-unregularized-result-data.txt'
+            txtFile = action_type + '-len-unregularized-' + str(frameNum) + '-result-data.txt'
     begin = time()
     allShuffledData = makeDataSetFromTxt(txtDir)
     # print(allShuffledData)  # 验证写入与读出的dataSet结构是否一致

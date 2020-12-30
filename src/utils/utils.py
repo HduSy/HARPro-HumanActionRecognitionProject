@@ -463,7 +463,7 @@ def deltaLen(preKeyPointList, curKeyPointList, norminalize=False):
         curKeyPointArray = np.array([curJoints[i][0], curJoints[i][1]])
         EDistance = np.sqrt(np.sum(np.square(preKeyPointArray - curKeyPointArray)))
         tmp.append(round(float(EDistance), 3))
-    return tmp
+    return np.array(tmp)
 
 
 # 高宽比比值 (1, )
@@ -476,11 +476,11 @@ def Qt(preKeyPointList, curKeyPointList):
 # 时序特征:deltaAng+Qt 7+1 (8, )
 # deltaLen+Qt 6+1 (7, )
 # array([-14.581, -6.322, 0.261, -31.428, 41.15, 0.261, -6.256, 0.941])
-def generateTempralAngleFeature2(preKeyPointList, curKeyPointList, anglization):
+def generateTempralFeature2(preKeyPointList, curKeyPointList, anglization):
     if anglization:
         F4 = deltaAng(preKeyPointList, curKeyPointList)
     else:
-        F4 = deltaLen()
+        F4 = deltaLen(preKeyPointList, curKeyPointList, False)
     F5 = Qt(preKeyPointList, curKeyPointList)
-    print(np.append(F4, F5).shape)
+    # print(np.append(F4, F5).shape)
     return np.append(F4, F5)

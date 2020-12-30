@@ -1,7 +1,7 @@
 import os
 import json
 from time import *
-from src.public import txtDir
+from src.public import txtDir, frameNum, inputA_dim, inputB_dim, anglization
 
 # actions = ['boxing', 'handclapping', 'handwaving', 'jogging', 'running', 'walking', 'falling1_8', 'falling2_0']
 action_type = 'falling2_0'
@@ -206,19 +206,21 @@ def write2Txt(fileDir, fileName, x, y):
     fileObj.write(line)
     # fileObj.close()
 
+
 # 将shuffled dataSet持久化
 def write2Txt2(fileDir, fileName, x1, x2, y):
     if not os.path.exists(fileDir):
         os.mkdir(fileDir)
     fileObj = open(fileDir + '\\' + fileName, mode='a', encoding="utf-8")
     line = ''
-    for i in range(25):
-        for j in range(25):
+    for i in range(frameNum):
+        for j in range(inputA_dim):
             line += str(x1[i][j]) + ' '
-    for i in range(25):
-        for j in range(25):
+    for i in range(frameNum):
+        for j in range(inputB_dim):
             line += str(x2[i][j]) + ' '
     line += y + '\n'
+    # print(line)
     fileObj.write(line)
 
 
