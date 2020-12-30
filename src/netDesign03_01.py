@@ -41,8 +41,9 @@ batch_size = 128  # 128  # 每次梯度更新的样本数
 # https://zhuanlan.zhihu.com/p/77609689
 
 
-n_step = 25
-n_input = 25
+time_steps = 25
+inputA_dim = 25
+inputB_dim = 25
 n_hidden = 128  # 128
 n_classes = 7  # 动作类别数
 
@@ -58,32 +59,32 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
     checkpoint_dir = 'checkpoints'
     # checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
     # 定义两个分支
-    inputA = Input(shape=(n_step, n_input))
-    inputB = Input(shape=(n_step, n_input))
+    inputA = Input(shape=(time_steps, inputA_dim))
+    inputB = Input(shape=(time_steps, inputB_dim))
     # 空间注意力模块-空间关键点选择门
     # return_sequences:true返回所有中间隐藏值false返回最后一个隐藏值
     # shape=(samples, time_steps, input_dim)
     if spatial_attention:
         print('空间注意力机制')
-        x1 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=True,
+        x1 = GRU(n_hidden, batch_input_shape=(None, time_steps, inputA_dim), return_sequences=True,
                  unroll=True)(inputA)
         x1 = AttentionLayer()(x1)
         # x1 = Attention()(x1)
     else:
         print('未使用空间注意力机制')
-        x1 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=False,
+        x1 = GRU(n_hidden, batch_input_shape=(None, time_steps, inputA_dim), return_sequences=False,
                  unroll=True)(inputA)
     x1 = Dense(24, activation='tanh')(x1)
     spatialModal = Model(inputs=inputA, outputs=x1)
     # 时间注意力模块-时间关键帧选择门
     if temporal_attention:
         print('时间注意力机制')
-        x2 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=True,
+        x2 = GRU(n_hidden, batch_input_shape=(None, time_steps, inputB_dim), return_sequences=True,
                  unroll=True)(inputB)
         x2 = AttentionLayer()(x2)
     else:
         print('未使用时间注意力机制')
-        x2 = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=False,
+        x2 = GRU(n_hidden, batch_input_shape=(None, time_steps, inputB_dim), return_sequences=False,
                  unroll=True)(inputB)
     x2 = Dense(24, activation='relu')(x2)
     temporalModal = Model(inputs=inputB, outputs=x2)
@@ -94,7 +95,7 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
     # combined = maximum([spatialModal.output, temporalModal.output])
     combined = concatenate([spatialModal.output, temporalModal.output])
     # combined = dot([spatialModal.output, spatialModal.output])
-    # z = GRU(n_hidden, batch_input_shape=(None, n_step, n_input), return_sequences=False, unroll=True)(combined)
+    # z = GRU(n_hidden, batch_input_shape=(None, time_steps, input_dim), return_sequences=False, unroll=True)(combined)
     z = Dense(24)(combined)
     z = Dropout(dropout_rate)(z)
     z = Dense(n_classes, activation='softmax')(z)

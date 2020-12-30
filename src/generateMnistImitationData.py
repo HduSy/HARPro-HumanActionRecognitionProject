@@ -3,7 +3,7 @@ from time import time
 from src.readTxtData2Memory import transformTxtLine2ListObj
 from src.utils.utils import generateSpatialFeature, generateTempralAngleFeature, generateTempralLenFeature
 from src.utils.utils import fusion, fusionMean, fusionMax, fusionMin
-from src.public import actions, txtDir, regularization, anglization
+from src.public import actions, txtDir, regularization, anglization, frameNum
 from src.refineAndSaveKeyPointData import write2Txt, write2Txt2
 
 # actions = ['falling1_8', 'falling2_0']
@@ -11,7 +11,6 @@ dataSet = []
 SFeatures = []
 TFeatures = []
 space = 1  # 稀疏间隔
-frameNum = 25  # n_input time_step步长 TODO:可以做下对比实验啊
 # regularization = False  # 归一化与否
 # TODO:使用归一化前后对模型准确率的影响
 # without regularization
@@ -29,7 +28,7 @@ frameNum = 25  # n_input time_step步长 TODO:可以做下对比实验啊
 # with tempral angle feature regularization 降低了 因为对角度进行归一化不科学
 # LSTM test score: 0.20507974412031235
 # LSTM test accuracy: 0.9375796318054199
-m = 0.9  # 训练集测试集划分比例
+m = 0.8  # 训练集测试集划分比例
 trainsize = None  # 训练集大小
 xn = []
 yn = []
@@ -145,14 +144,14 @@ def spliceDataSet(test=False):
     global trainsize, dataSet, spatialN_test, temporalN_test, yn_test, spatialN, temporalN, yn, fileName
     if regularization:
         if anglization:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-regularized-result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-regularized-' + frameNum + 'result-data.txt'
         else:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-regularized-result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-regularized-' + frameNum + 'result-data.txt'
     else:
         if anglization:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-unregularized-result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-angle-unregularized-' + frameNum + 'result-data.txt'
         else:
-            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-unregularized-result-data.txt'
+            fileName = txtDir + '\\all-shuffled\\all-shuffled-len-unregularized-' + frameNum + 'result-data.txt'
     dataSet = loadAllShuffledDataFromTxt(fileName)
     # todo:划分训练集、验证集与测试集
     trainsize = int(m * len(dataSet))

@@ -1,5 +1,5 @@
 import cv2
-video_path = 'F:\\XLDownload\\dataSet\\00000.avi'
+video_path = 'E:\视频\背对正摔.avi'
 if __name__ == '__main__':
     cap = cv2.VideoCapture(video_path)
     fps = int(round(cap.get(cv2.CAP_PROP_FPS)))  # 帧率

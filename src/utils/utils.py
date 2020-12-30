@@ -144,21 +144,28 @@ def euclidDistance(x1, y1, x2, y2):
 # LSTM test accuracy: 0.9566879272460938
 def fusion(f1, f2, w1=1, w2=0.1):
     return f1 * w1 + f2 * w2
+
+
 # mean
 # LSTM test score: 0.22725442759929948
 # LSTM test accuracy: 0.9681528806686401
 def fusionMean(f1, f2):
-    return (f1 + f2)/2
+    return (f1 + f2) / 2
+
+
 # max
 # LSTM test score: 0.19907013450743286
 # LSTM test accuracy: 0.9490445852279663
 def fusionMax(f1, f2):
     return np.where(f1 > f2, f1, f2)
+
+
 # min
 # LSTM test score: 0.1777873030893362
 # LSTM test accuracy: 0.9554139971733093
 def fusionMin(f1, f2):
     return np.where(f1 < f2, f1, f2)
+
 
 # 将[{'x':76,'y':22,'score':0.852835},{},{}...]转化为[[76,22],[],[]...] or [76,22,......] (前者吧 x、y两维分别独立归一化)
 def keyPointList2List(personKeyPointList):
@@ -183,11 +190,11 @@ def angle(x1, y1, x2, y2, x3, y3, x4, y4):
     dy1 = y2 - y1
     dx2 = x4 - x3
     dy2 = y4 - y3
-    angle1 = math.atan2(dy1, dx1)
-    angle1 = float(angle1 * 180 / math.pi)
+    angle1 = math.atan2(dy1, dx1)  # 弧度
+    angle1 = float(angle1 * 180 / math.pi)  # 角度
     # print(angle1)
-    angle2 = math.atan2(dy2, dx2)
-    angle2 = float(angle2 * 180 / math.pi)
+    angle2 = math.atan2(dy2, dx2)  # 弧度
+    angle2 = float(angle2 * 180 / math.pi)  # 角度
     # print(angle2)
     if angle1 * angle2 >= 0:
         included_angle = abs(angle1 - angle2)
@@ -311,6 +318,88 @@ def generateSpatialFeature(personKeyPointList, norminalize=False):
     # return feature
 
 
+# 3 4 6 7 11 14到8相对距离 (6, )
+def positionFeature(personKeyPointList, norminalize=False):
+    tmp = []
+    if norminalize:
+        personKeyPointList = keyPointList2List(personKeyPointList)
+    MidHip = np.array([personKeyPointList[8]['x'], personKeyPointList[8]['y']])
+    joints = [
+        np.array([personKeyPointList[3]['x'], personKeyPointList[3]['y']]),
+        np.array([personKeyPointList[4]['x'], personKeyPointList[4]['y']]),
+        np.array([personKeyPointList[6]['x'], personKeyPointList[6]['y']]),
+        np.array([personKeyPointList[7]['x'], personKeyPointList[7]['y']]),
+        np.array([personKeyPointList[11]['x'], personKeyPointList[11]['y']]),
+        np.array([personKeyPointList[14]['x'], personKeyPointList[14]['y']]),
+    ]
+    for i in range(len(joints)):
+        joint = joints[i]
+        EDistance = np.sqrt(np.sum(np.square(joint - MidHip)))
+        tmp.append(round(float(EDistance), 3))
+    return tmp
+
+
+# Ang1-7角度特征 (7, )
+def angleFeature(personKeyPointList):
+    # 左大腿与左小腿
+    Ang1 = angle(personKeyPointList[12]['x'], personKeyPointList[12]['y'], personKeyPointList[13]['x'],
+                 personKeyPointList[13]['y'], personKeyPointList[13]['x'], personKeyPointList[13]['y'],
+                 personKeyPointList[14]['x'], personKeyPointList[14]['y'])
+    # 背部向量与左大腿
+    Ang2 = angle(personKeyPointList[1]['x'], personKeyPointList[1]['y'], personKeyPointList[8]['x'],
+                 personKeyPointList[8]['y'], personKeyPointList[12]['x'], personKeyPointList[12]['y'],
+                 personKeyPointList[13]['x'], personKeyPointList[13]['y'])
+    # 背部向量与水平方向
+    Ang3 = angle(personKeyPointList[1]['x'], personKeyPointList[1]['y'], personKeyPointList[8]['x'],
+                 personKeyPointList[8]['y'], 0, 0,
+                 1, 0)
+    # 左肘弯曲角度
+    Ang4 = angle(personKeyPointList[5]['x'], personKeyPointList[5]['y'], personKeyPointList[6]['x'],
+                 personKeyPointList[6]['y'], personKeyPointList[6]['x'], personKeyPointList[6]['y'],
+                 personKeyPointList[7]['x'], personKeyPointList[7]['y'])
+    # 右肘弯曲角度
+    Ang5 = angle(personKeyPointList[2]['x'], personKeyPointList[2]['y'], personKeyPointList[3]['x'],
+                 personKeyPointList[3]['y'], personKeyPointList[3]['x'], personKeyPointList[3]['y'],
+                 personKeyPointList[4]['x'], personKeyPointList[4]['y'])
+    # 背部向量与垂直向量
+    Ang6 = angle(personKeyPointList[1]['x'], personKeyPointList[1]['y'], personKeyPointList[8]['x'],
+                 personKeyPointList[8]['y'], 0, 0,
+                 0, 1)
+    # 左小腿向量与垂直向量
+    Ang7 = angle(personKeyPointList[13]['x'], personKeyPointList[13]['y'], personKeyPointList[14]['x'],
+                 personKeyPointList[14]['y'], 0, 0,
+                 0, 1)
+    return [Ang1, Ang2, Ang3, Ang4, Ang5, Ang6, Ang7]
+
+
+# 高宽比 得考虑到有效关节点即score不为0 (1, )
+def hwFuture(personKeyPointList):
+    x_Min, x_Max = 99999, -99999
+    y_Min, y_Max = 99999, -99999
+    for i in range(body_25_key_points_number):
+        if personKeyPointList[i]['x'] <= x_Min and personKeyPointList[i]['score'] > 0:
+            x_Min = personKeyPointList[i]['x']
+        if personKeyPointList[i]['x'] >= x_Max and personKeyPointList[i]['score'] > 0:
+            x_Max = personKeyPointList[i]['x']
+        if personKeyPointList[i]['y'] <= y_Min and personKeyPointList[i]['score'] > 0:
+            y_Min = personKeyPointList[i]['y']
+        if personKeyPointList[i]['y'] >= y_Max and personKeyPointList[i]['score'] > 0:
+            y_Max = personKeyPointList[i]['y']
+    # print(x_Max, x_Min, y_Max, y_Min)
+    return [round((y_Max - y_Min) / (x_Max - x_Min), 3)]
+
+
+# 空间分布特征:相对位置特征+角度特征+高宽比
+# 6+7+1 (14,)
+# array([16.155, 25.612, 17.889, 29.206, 37.121, 40.05, 11.72, 1.132, 96.843, 74.281, 74.055, 6.843, 6.009, 3.43478261])
+def generateSpatialFeature2(personKeyPointList, norminalize=False):
+    F1 = positionFeature(personKeyPointList, norminalize)
+    F2 = angleFeature(personKeyPointList)
+    F3 = hwFuture(personKeyPointList)
+    # print(np.array(F1 + F2 + F3).shape)
+    return np.array(F1 + F2 + F3)  # (25,)
+
+
 # 时间序列特征---距离-受d2缩放影响 已验证 norminalize=True 情况下函数正确
 def generateTempralLenFeature(preKeyPointList, curKeyPointList, norminalize=False):
     feature = []
@@ -338,3 +427,60 @@ def generateTempralAngleFeature(preKeyPointList, curKeyPointList, norminalize=Fa
         feature = min_max_scaler.fit_transform(feature.reshape(-1, 1))
         feature = feature.reshape(25, )  # (25,1)
     return feature
+
+
+# deltaAng Ang1-7角度差特征 (7, )
+def deltaAng(preKeyPointList, curKeyPointList):
+    preKeyPointAngleList = angleFeature(preKeyPointList)
+    curKeyPointAngleList = angleFeature(curKeyPointList)
+    return np.array(curKeyPointAngleList) - np.array(preKeyPointAngleList)
+
+
+# deltaLen 3 4 6 7 11 14关节点距离特征 (6, ) # norminalize最好是false这样基本是在一个量纲上
+def deltaLen(preKeyPointList, curKeyPointList, norminalize=False):
+    tmp = []
+    if norminalize:
+        preKeyPointList = keyPointList2List(preKeyPointList)
+        curKeyPointList = keyPointList2List(curKeyPointList)
+    preJoints = [
+        np.array([preKeyPointList[3]['x'], preKeyPointList[3]['y']]),
+        np.array([preKeyPointList[4]['x'], preKeyPointList[4]['y']]),
+        np.array([preKeyPointList[6]['x'], preKeyPointList[6]['y']]),
+        np.array([preKeyPointList[7]['x'], preKeyPointList[7]['y']]),
+        np.array([preKeyPointList[11]['x'], preKeyPointList[11]['y']]),
+        np.array([preKeyPointList[14]['x'], preKeyPointList[14]['y']]),
+    ]
+    curJoints = [
+        np.array([curKeyPointList[3]['x'], curKeyPointList[3]['y']]),
+        np.array([curKeyPointList[4]['x'], curKeyPointList[4]['y']]),
+        np.array([curKeyPointList[6]['x'], curKeyPointList[6]['y']]),
+        np.array([curKeyPointList[7]['x'], curKeyPointList[7]['y']]),
+        np.array([curKeyPointList[11]['x'], curKeyPointList[11]['y']]),
+        np.array([curKeyPointList[14]['x'], curKeyPointList[14]['y']]),
+    ]
+    for i in range(0, len(preJoints)):
+        preKeyPointArray = np.array([preJoints[i][0], preJoints[i][1]])
+        curKeyPointArray = np.array([curJoints[i][0], curJoints[i][1]])
+        EDistance = np.sqrt(np.sum(np.square(preKeyPointArray - curKeyPointArray)))
+        tmp.append(round(float(EDistance), 3))
+    return tmp
+
+
+# 高宽比比值 (1, )
+def Qt(preKeyPointList, curKeyPointList):
+    preHwFeature = hwFuture(preKeyPointList)
+    curHwFeature = hwFuture(curKeyPointList)
+    return np.array([round(curHwFeature[0] / preHwFeature[0], 3)])
+
+
+# 时序特征:deltaAng+Qt 7+1 (8, )
+# deltaLen+Qt 6+1 (7, )
+# array([-14.581, -6.322, 0.261, -31.428, 41.15, 0.261, -6.256, 0.941])
+def generateTempralAngleFeature2(preKeyPointList, curKeyPointList, anglization):
+    if anglization:
+        F4 = deltaAng(preKeyPointList, curKeyPointList)
+    else:
+        F4 = deltaLen()
+    F5 = Qt(preKeyPointList, curKeyPointList)
+    print(np.append(F4, F5).shape)
+    return np.append(F4, F5)
