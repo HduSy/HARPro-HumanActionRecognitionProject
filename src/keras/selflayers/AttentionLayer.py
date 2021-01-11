@@ -2,7 +2,7 @@ from keras.engine.topology import Layer
 from keras import backend as K
 
 
-# 自定义注意力层
+# 注意力层
 class AttentionLayer(Layer):
     def __init__(self, **kwargs):
         super(AttentionLayer, self).__init__(**kwargs)

@@ -3,7 +3,7 @@ from keras.models import load_model
 from src.generateOneActionImitationData import readOneActionDataFromTxt
 from src.keras.selflayers.AttentionLayer import AttentionLayer
 from src.generateMnistImitationData import makeDataSetFromTxt, spliceDataSet
-from src.public import spatial_attention, temporal_attention
+from src.public import spatial_attention, temporal_attention, frameNum
 import numpy as np
 
 from src.readTxtData2Memory import transformTxtLine2ListObj
@@ -72,8 +72,9 @@ if __name__ == '__main__':
     #                action_type, y_test[i]):
     #         right += 1
     for i in range(sample_num):
-        predict([np.array(spatial_test[i]).reshape(1, 25, 25), np.array(temporal_test[i]).reshape(1, 25, 25)],
-                action_type, y_test[i])
+        predict(
+            [np.array(spatial_test[i]).reshape(1, frameNum, 14), np.array(temporal_test[i]).reshape(1, frameNum, 8)],
+            action_type, y_test[i])
     print(action_right, action_sum)
     accuracy = float(action_right / action_sum) * 100
     # accuracy = predict([np.array(spatial_test), np.array(temporal_test)], action_type)

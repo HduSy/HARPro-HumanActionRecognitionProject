@@ -73,7 +73,7 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
         print('未使用空间注意力机制')
         x1 = GRU(n_hidden, batch_input_shape=(None, frameNum, inputA_dim), return_sequences=False,
                  unroll=True)(inputA)
-    x1 = Dense(24, activation='tanh')(x1)
+    x1 = Dense(64, activation='tanh')(x1)
     spatialModal = Model(inputs=inputA, outputs=x1)
     # 时间注意力模块-时间关键帧选择门
     if temporal_attention:
@@ -81,11 +81,12 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
         x2 = GRU(n_hidden, batch_input_shape=(None, frameNum, inputB_dim), return_sequences=True,
                  unroll=True)(inputB)
         x2 = AttentionLayer()(x2)
+        # x2 = TemporalAttentionLayer()(x2)
     else:
         print('未使用时间注意力机制')
         x2 = GRU(n_hidden, batch_input_shape=(None, frameNum, inputB_dim), return_sequences=False,
                  unroll=True)(inputB)
-    x2 = Dense(24, activation='relu')(x2)
+    x2 = Dense(64, activation='relu')(x2)
     temporalModal = Model(inputs=inputB, outputs=x2)
 
     # 特征做融合-后面主GRU可能就不需要再加注意力模型了
@@ -95,7 +96,7 @@ def train(x1_train, x2_train, y1_train, x1_vali, x2_vali, y1_vali):
     combined = concatenate([spatialModal.output, temporalModal.output])
     # combined = dot([spatialModal.output, spatialModal.output])
     # z = GRU(n_hidden, batch_input_shape=(None, frameNum, input_dim), return_sequences=False, unroll=True)(combined)
-    z = Dense(24)(combined)
+    z = Dense(32)(combined)
     z = Dropout(dropout_rate)(z)
     z = Dense(n_classes, activation='softmax')(z)
 
@@ -126,7 +127,7 @@ def test(x1_test, x2_test, y_test):
     print('begin model testing...')
     global model
     # scores = model.evaluate([spatial_vali, temporal_vali], y_vali, batch_size=32, verbose=1)
-    scores = model.evaluate([x1_test, x2_test], y_test, batch_size=32, verbose=1)
+    scores = model.evaluate([x1_test, x2_test], y_test, batch_size=1, verbose=1)
     # print(scores)
     # loss, accuracy
     print('GRU test score:', scores[0])
